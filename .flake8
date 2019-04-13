@@ -1,3 +1,3 @@
 [flake8]
-ignore = D203,E501,E265
+ignore = D203,E501,E265,F405,E722
 exclude = tests,docs,examples

@@ -1,6 +1,7 @@
+[![Build Status](https://travis-ci.com/johnklee/fpu.svg?branch=master)](https://travis-ci.com/johnklee/fpu)<br/>
 Overview and Table of Contents
 ==========================
-This package is used as utility to support more thorough FP (functional programming) functionalities in Python. For more, you can refer to [FPU.pptx](docs/FPU.pptx)
+This package is used as utility to support more thorough FP (functional programming) functionalities in Python. For more, you can refer to [FPU.pptx](https://github.com/johnklee/fpu/blob/master/docs/FPU.pptx)
 
 * [**FP Introduction**: Functional programming has a long history. In a nutshell, its a style of programming where you focus on transforming data through the use of small expressions that ideally don’t contain side effects.](#fpi)
     * [Feature of FP](#fpi_s1)

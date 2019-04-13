@@ -1,12 +1,12 @@
 from abc import ABCMeta, abstractmethod
 try:
-    from fp import *  # noqa
-except:
-    from .fp import *  # noqa
+    from fp import *    # noqa
+except:                 # noqa
+    from .fp import *   # noqa
 
 
-ret = TailCall.ret
-sus = TailCall.sus
+ret = TailCall.ret      # noqa
+sus = TailCall.sus      # noqa
 
 
 class UOException(Exception):
@@ -222,9 +222,9 @@ class Cons(List):
         self.h = head
         self.t = tail
         if tail:
-            self.l = self.t.length() + 1
+            self.l = self.t.length() + 1  # noqa
         else:
-            self.l = 1
+            self.l = 1  # noqa
 
     def head(self):
         return self.h

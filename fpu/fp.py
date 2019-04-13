@@ -3,9 +3,9 @@ import functools
 import logging
 from abc import ABCMeta, abstractmethod
 try:
-    from utils import *  # noqa
-except:
-    from .utils import *  # noqa
+    from utils import *     # noqa
+except:                     # noqa
+    from .utils import *    # noqa
 
 r'''
 This module is created to let Python support FP (Function Programming)
@@ -373,7 +373,7 @@ class CollectionUtils:
     #    return []
 
     @staticmethod
-    def l(*args):
+    def l(*args):  # noqa
         alist = []
         alist.extend(args)
         return alist
