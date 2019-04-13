@@ -10,3 +10,6 @@ test:
 
 dist:
 	python3 setup.py sdist
+
+lint:
+	flake8 fpu

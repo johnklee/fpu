@@ -1,15 +1,13 @@
-import functools
-import collections
-
 from abc import ABCMeta, abstractmethod
 try:
-    from fp import *
+    from fp import *  # noqa
 except:
-    from .fp import *
+    from .fp import *  # noqa
 
 
 ret = TailCall.ret
 sus = TailCall.sus
+
 
 class UOException(Exception):
     r'''
@@ -19,9 +17,10 @@ class UOException(Exception):
         super(Exception, self).__init__(message)
         self.errors = errors
 
+
 class List:
     __metaclass__ = ABCMeta
-    
+
     @abstractmethod
     def head(self):
         raise NotImplementedError()
@@ -108,7 +107,7 @@ class List:
     @abstractmethod
     def append(self, e):
         raise NotImplementedError()
-    
+
     def reduce(self, f, identity=None):
         if identity is not None:
             return self.foldLeft(identity, f)
@@ -142,7 +141,7 @@ class List:
 
 class ListIter:
     def __init__(self, cont):
-        self.cont = cont;
+        self.cont = cont
 
     def __iter__(self):
         return self
@@ -249,7 +248,7 @@ class Cons(List):
         return self._drop(self, n).eval()
 
     def _drop(self, alist, n):
-        return ret(alist) if n <=0 or alist.isEmpty() else sus(Supplier(self._drop, alist.t, n - 1))
+        return ret(alist) if n <= 0 or alist.isEmpty() else sus(Supplier(self._drop, alist.t, n - 1))
 
     def dropWhile(self, f):
         return self._dropWhile(self, f).eval()
@@ -319,7 +318,7 @@ def fl(*args):
     else:
         sn = nil
         for i in range(len(args)):
-            e = args[-1*(i+1)]
+            e = args[-1 * (i + 1)]
             if isinstance(e, list):
                 for se in e:
                     sn = Cons(se, sn)
@@ -327,8 +326,9 @@ def fl(*args):
                 for se in e:
                     sn = Cons(se, sn)
             else:
-                sn = Cons(args[-1*(i+1)], sn)
+                sn = Cons(args[-1 * (i + 1)], sn)
         return sn
+
 
 def concat(list1, list2):
     r'''
@@ -336,22 +336,26 @@ def concat(list1, list2):
     '''
     return list1 if list2.isEmpty() else _concat(list1.reverse(), list2).eval()
 
+
 def _concat(list1, list2):
     return ret(list2) if list1.isEmpty() else sus(Supplier(_concat, list1.t, Cons(list1.h, list2)))
 
+
 def fsum(alist):
     r'''
-    * For an empty list: 0 
+    * For an empty list: 0
     * For a non-empty list: head plus the sum of the tail
-    '''    
+    '''
     return 0 if alist.isEmpty() else alist.foldRight(0, lambda e, a: e + a)
+
 
 def fproduct(alist):
     r'''
-    * For an empty list: 1.0 
+    * For an empty list: 1.0
     * For a non-empty list: head * product of tail
     '''
     return 1.0 if alist.isEmpty() else alist.foldRight(1.0, lambda e, a: e * a)
+
 
 def flatten(alist):
     r'''

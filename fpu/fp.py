@@ -2,11 +2,10 @@
 import functools
 import logging
 from abc import ABCMeta, abstractmethod
-#from .utils import *
 try:
-    from utils import *
+    from utils import *  # noqa
 except:
-    from .utils import *
+    from .utils import *  # noqa
 
 r'''
 This module is created to let Python support FP (Function Programming)
@@ -15,23 +14,24 @@ This module is created to let Python support FP (Function Programming)
 ################################
 # API Segment
 ################################
+
+
 def compose2(f, g):
     def m(*args):
         return f(g(*args))
     return m
-    #return lambda x: f(g(x))
+
 
 def compose(*functions):
     def m(*args):
         return args
-    #return functools.reduce(compose2, functions, lambda x:x)
     return functools.reduce(compose2, functions, m)
+
 
 def andThen(f, g):
     def m(*args):
         return g(f(*args))
     return m
-    #return lambda x: g(f(x))
 
 
 ################################
@@ -48,7 +48,7 @@ class Option:
     @abstractmethod
     def getOrElse(self, supr):
         r'''
-        Method that will return either the contained value if it exists, 
+        Method that will return either the contained value if it exists,
         or return the result by executing the given `supr` object.
         '''
         raise NotImplementedError()
@@ -56,7 +56,7 @@ class Option:
     @abstractmethod
     def getOr(self, dft):
         r'''
-        This method that will return either the contained value if it exists, 
+        This method that will return either the contained value if it exists,
         or a provided default one otherwise.
         '''
         raise NotImplementedError()
@@ -253,6 +253,7 @@ class Empty(Result):
     def map(self, func):
         return self
 
+
 class Success(Result):
     def __init__(self, value):
         self.value = value
@@ -280,7 +281,7 @@ class Failure(Result):
 
     def bind(self, successEff, failureEff):
         return failureEff(self.message)
-    
+
     def __str__(self):
         return "Failure({})".format(self.message)
 
@@ -372,7 +373,7 @@ class CollectionUtils:
     #    return []
 
     @staticmethod
-    def l(*args):        
+    def l(*args):
         alist = []
         alist.extend(args)
         return alist
@@ -389,18 +390,17 @@ class CollectionUtils:
         for e in alist:
             nlist.append(fun(e))
         return tuple(nlist)
-   
+
     @staticmethod
     def head(alist):
         if len(alist) == 0:
             raise Exception('Input list with length as 0')
         return CollectionUtils.l(alist[0])
 
-
     @staticmethod
     def copy(alist):
         nlist = CollectionUtils.l()
-        nlist.extend(alist) 
+        nlist.extend(alist)
         return tuple(nlist)
 
     @staticmethod
@@ -457,7 +457,7 @@ class CollectionUtils:
     def forEach(alist, fun):
         for e in alist:
             fun(e)
-       
+
     @staticmethod
     def unfold(seed, f, p):
         r'''
@@ -473,7 +473,7 @@ class CollectionUtils:
         while p(temp):
             nlist.append(temp)
             temp = f(temp)
- 
+
         return tuple(nlist)
 
     @staticmethod
