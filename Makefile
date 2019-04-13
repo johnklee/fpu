@@ -8,8 +8,12 @@ init:
 test:
 	pytest tests
 
-dist:
-	python3 setup.py sdist
+dist: init test
+	rm -f dist/*
+	python3 setup.py sdist bdist_wheel
 
 lint:
 	flake8 fpu
+
+upload: dist
+	twine upload --skip-existing dist/*
