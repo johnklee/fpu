@@ -281,7 +281,6 @@ def gemstones_dec(arr):
 print("Output of gemstones_imp={}".format(gemstones_dec(arr)))
 ```
 
-
 # Supplement <a name='supplement'></a>
 * [FP In Python - Ch1. (Avoiding) Flow Control](http://puremonkey2010.blogspot.com/2018/05/fp-in-python-ch1-avoiding-flow-control.html)
 * [FP In Python - Ch2. Callables](http://puremonkey2010.blogspot.com/2018/05/fp-in-python-ch2-callables.html)
