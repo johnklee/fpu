@@ -12,6 +12,24 @@ from flist import *  # noqa
 #####################
 
 
+class ListTest(unittest.TestCase):
+  """Unit test cases of interfact List."""
+
+  def setUp(self):
+    pass
+
+  def tearDown(self):
+    pass
+
+  def test_method_sum(self):
+    raw_data = [1, 2, 3, 4]
+    fpu_list = fl(*raw_data)
+
+    sum_result = fpu_list.sum()
+
+    self.assertEqual(sum_result, sum(raw_data))
+
+
 class GFTestCase(unittest.TestCase):
   """Test Case(s) of global function(s) from module `flist`"""
   def setUp(self):
@@ -41,6 +59,13 @@ class GFTestCase(unittest.TestCase):
     self.assertEqual(3, alist.length())
     self.assertEqual(1, alist.head())
     self.assertEqual('[2, 3, NIL]', str(alist.tail()))
+
+  def test_gapi_comp(self):
+    """Testing global API:comp to generate composition from given list."""
+    # Composition for 2 element of [1, 2, 3] will be [(1, 2), (1, 3), (2, 3)]
+    fpu_comp_list = comp([1, 2, 3], 2)
+
+    self.assertEqual('[(1, 2), (1, 3), (2, 3), NIL]', str(fpu_comp_list))
 
   def test_gapi_concat(self):
     """Testing global API:concat to concat two list."""
