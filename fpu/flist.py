@@ -1,12 +1,15 @@
 """Module to hold list data structure used in FP world."""
 from abc import ABCMeta, abstractmethod
-import errors
 try:
   from fp import *    # noqa
-except:                 # noqa
+  import errors
+except:               # noqa
   from .fp import *   # noqa
+  from fpu import errors
 
+from itertools import combinations
 from typing import Optional
+from types import GeneratorType
 
 ret = TailCall.ret      # noqa
 sus = TailCall.sus      # noqa
@@ -128,6 +131,10 @@ class List:
   def __iter__(self):
     return ListIter(self)
 
+  @abstractmethod
+  def sum(self):
+    raise NotImplementedError()
+
 
 class ListIter:
   """Iterator of FPU's list object."""
@@ -210,6 +217,9 @@ class Nil(List):
   def exists(self, f):
     return False
 
+  def sum(self):
+    return 0
+
 
 class Cons(List):
   """Cons."""
@@ -291,6 +301,9 @@ class Cons(List):
     """@Need to be enhanced by fold operation."""
     return f(self.head()) or self.tail().exists(f)
 
+  def sum(self):
+    return self.h if self.t.isEmpty() else self.h + self.t.sum()
+
 
 nil = Nil()
 
@@ -298,6 +311,14 @@ nil = Nil()
 ###################################
 # Common Utility Function
 ###################################
+
+def comp(datas, r: int):
+  """Produce Cn pick up r elements from given datas."""
+  if len(datas) == 0:
+    return nil
+
+  return fl(*list(combinations(datas, r)))
+
 
 def fl(*args):
   """Create List with element as given input.
@@ -314,7 +335,7 @@ def fl(*args):
   sn = nil
   for i in range(len(args)):
     data = args[-1 * (i + 1)]
-    if isinstance(data, list):
+    if isinstance(data, list) or isinstance(data, GeneratorType):
       for element in data:
         sn = Cons(element, sn)
     elif isinstance(data, range):
