@@ -4,6 +4,7 @@ import os
 import re
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fpu')))  # noqa
 from fp import *  # noqa
+import flist
 from flist import *  # noqa
 
 
@@ -29,6 +30,17 @@ class ListTest(unittest.TestCase):
 
     self.assertEqual(sum_result, sum(raw_data))
 
+  def test_method_zip(self):
+    raw_data = ['abc', '123', 'def']
+    fpu_list = fl(*raw_data)
+
+    fpu_zip_list = fpu_list.zip()
+
+    self.assertTrue(isinstance(fpu_zip_list, flist.List))
+    self.assertEqual(
+        list(fpu_zip_list),
+        [('a', '1', 'd'), ('b', '2', 'e'), ('c', '3', 'f')])
+
 
 class GFTestCase(unittest.TestCase):
   """Test Case(s) of global function(s) from module `flist`"""
@@ -50,6 +62,17 @@ class GFTestCase(unittest.TestCase):
     self.assertEqual('012345', alist.foldLeft(0, lambda a, e: "{}{}".format(a, e)))
     self.assertEqual(15, alist.foldLeft(0, lambda a, e: a + e))
     self.assertEqual(120.0, alist.foldLeft(1.0, lambda a, e: a * e))
+
+  def test_api_foldLeft_with_short_stop(self):
+    alist = fl(1, 2, 3, 4, 5)
+
+    result = alist.foldLeft(
+        0, lambda a, b: a + b,
+        short_stop_func=lambda v: v > 3)
+
+    # The folding operation will stop at element 4.
+    # So we have folding result as 0 + 1 + 2 + 3 = 6
+    self.assertEqual(result, 6)
 
   def test_gapi_fl(self):
     """Testing global API:fl to create object of List."""

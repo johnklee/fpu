@@ -17,6 +17,8 @@ sus = TailCall.sus      # noqa
 
 UOException = errors.UOException
 
+always_false_func = lambda a: False  # noqa
+
 
 class List:
   """List interface in FPU's world."""
@@ -94,28 +96,59 @@ class List:
 
   @abstractmethod
   def filter(self, f):
-    """Method that removes from a list the elements that don't satisfy a given predicate."""
+    """Method to remove the elements that don't satisfy a given predicate."""
     raise NotImplementedError()
 
   @abstractmethod
   def append(self, e):
     raise NotImplementedError()
 
-  def reduce(self, f, identity=None):
+  def reduce(self, f, identity=None, short_stop_func=always_false_func):
+    """Conducts FP reduce opeartion.
+
+    Args:
+      f: Function as reduce operation.
+      identity: Initializer to place as the first elemnt of reduce operation.
+          Default is None which means the first element of the list will be used
+          as identity/initializer.
+      short_stop_func: A function to check if the reduce operation should stop.
+          If the given function return True, it implies to stop right away.
+
+    Returns:
+      Reduced result.
+    """
     if identity is not None:
-      return self.foldLeft(identity, f)
+      return self.foldLeft(identity, f, short_stop_func)
     else:
-      return self.t.foldLeft(self.h, f)
+      return self.t.foldLeft(self.h, f, short_stop_func)
 
   @abstractmethod
   def foldRight(self, identity, f):
     raise NotImplementedError()
 
-  def foldLeft(self, identity, f):
-    return self._foldLeft(identity, self, f).eval()
+  def foldLeft(self, identity, f, short_stop_func=always_false_func):
+    """Conducts fold left operation.
 
-  def _foldLeft(self, acc, alist, f):
-    return ret(acc) if alist.isEmpty() else sus(Supplier(self._foldLeft, f(acc, alist.h), alist.t, f))
+    Args:
+      identity: Initializer to place as the first elemnt of fold operation.
+      f: Functon as fold operation.
+      short_stop_func: A function to check if the reduce operation should stop.
+          If the given function return True, it implies to stop right away.
+
+    Returns:
+      Fold left result.
+    """
+    if short_stop_func(identity):
+      return nil
+
+    return self._foldLeft(identity, self, f, short_stop_func).eval()
+
+  def _foldLeft(self, acc, alist, f, short_stop_func=always_false_func):
+    if alist.isEmpty() or short_stop_func(alist.h):
+      return ret(acc)
+
+    return sus(Supplier(
+      self._foldLeft, f(acc, alist.h), alist.t, f, short_stop_func))
 
   @abstractmethod
   def headOption(self):
@@ -133,6 +166,10 @@ class List:
 
   @abstractmethod
   def sum(self):
+    raise NotImplementedError()
+
+  @abstractmethod
+  def zip(self):
     raise NotImplementedError()
 
 
@@ -220,6 +257,9 @@ class Nil(List):
   def sum(self):
     return 0
 
+  def zip(self):
+    return self
+
 
 class Cons(List):
   """Cons."""
@@ -303,6 +343,9 @@ class Cons(List):
 
   def sum(self):
     return self.h if self.t.isEmpty() else self.h + self.t.sum()
+
+  def zip(self):
+    return fl(*list(zip(*list(self))))
 
 
 nil = Nil()
