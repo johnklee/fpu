@@ -48,12 +48,18 @@ class List:
 
   @abstractmethod
   def drop(self, n):
-    """Dropping the n first elements of a list while not mutating or creating anything."""
+    """
+    Dropping the n first elements of a list while not mutating or creating
+    anything.
+    """
     raise NotImplementedError()
 
   @abstractmethod
   def dropWhile(self, f):
-    """Method to remove elements from the head of the List as long as a condition holds true."""
+    """
+    Method to remove elements from the head of the List as long as a condition
+    holds true.
+    """
     raise NotImplementedError()
 
   @abstractmethod
@@ -87,7 +93,9 @@ class List:
 
   @abstractmethod
   def flatMap(self, f):
-    """method that applies to each element of List<A> a function from A to List<B>, and returns a List<B>.
+    """
+    method that applies to each element of List<A> a function from A to List<B>,
+    and returns a List<B>.
 
     Returns:
       List object
@@ -172,7 +180,7 @@ class List:
   def zip(self):
     raise NotImplementedError()
 
-    
+
 class ListIter:
   """Iterator of FPU's list object."""
 
@@ -287,25 +295,41 @@ class Cons(List):
     return "[{}NIL]".format(self.toString("", self).eval())
 
   def toString(self, sb, alist):
-    return ret(sb) if alist.isEmpty() else sus(Supplier(self.toString, sb + "{}, ".format(alist.h), alist.t))
+    return (
+      ret(sb)
+      if alist.isEmpty()
+      else sus(Supplier(self.toString, sb + "{}, ".format(alist.h), alist.t))
+    )
 
   def drop(self, n):
     return self._drop(self, n).eval()
 
   def _drop(self, alist, n):
-    return ret(alist) if n <= 0 or alist.isEmpty() else sus(Supplier(self._drop, alist.t, n - 1))
+    return (
+      ret(alist)
+      if n <= 0 or alist.isEmpty()
+      else sus(Supplier(self._drop, alist.t, n - 1))
+    )
 
   def dropWhile(self, f):
     return self._dropWhile(self, f).eval()
 
   def _dropWhile(self, alist, f):
-    return sus(Supplier(self._dropWhile, alist.t, f)) if not alist.isEmpty() and f(alist.h) else ret(alist)
+    return (
+      sus(Supplier(self._dropWhile, alist.t, f))
+      if not alist.isEmpty() and f(alist.h)
+      else ret(alist)
+    )
 
   def reverse(self):
     return self._reverse(nil, self).eval()
 
   def _reverse(self, acc, alist):
-    return ret(acc) if alist.isEmpty() else sus(Supplier(self._reverse, Cons(alist.h, acc), alist.t))
+    return (
+      ret(acc)
+      if alist.isEmpty()
+      else sus(Supplier(self._reverse, Cons(alist.h, acc), alist.t))
+    )
 
   def init(self):
     return self.reverse().tail().reverse()
@@ -332,7 +356,11 @@ class Cons(List):
     return self._foldRight(identity, self.reverse(), identity, f).eval()
 
   def _foldRight(self, acc, alist, identity, f):
-    return ret(acc) if alist.isEmpty() else sus(Supplier(self._foldRight, f(alist.h, acc), alist.t, identity, f))
+    return (
+      ret(acc)
+      if alist.isEmpty()
+      else sus(Supplier(self._foldRight, f(alist.h, acc), alist.t, identity, f))
+    )
 
   def headOption(self):
     raise UOException('headOption called on an empty list')
@@ -371,6 +399,15 @@ def fl(*args):
 
   Returns:
     `Cons` iff input `args` is not empty.
+
+  Examples:
+    >>> fd = fl(*[1,2,3])
+    >>> fd.sum()
+    6
+
+    >>> fpu_list = fl('abc', 'ade', 'agz', 'ayy')
+    >>> list(fpu_list.zip())
+    [('a', 'a', 'a', 'a'), ('b', 'd', 'g', 'y'), ('c', 'e', 'z', 'y')]
   """
   if len(args) == 0:
     return nil
@@ -396,7 +433,10 @@ def concat(list1, list2):
 
 
 def _concat(list1, list2):
-  return ret(list2) if list1.isEmpty() else sus(Supplier(_concat, list1.t, Cons(list1.h, list2)))
+  return (
+    ret(list2) if list1.isEmpty()
+    else sus(Supplier(_concat, list1.t, Cons(list1.h, list2)))
+  )
 
 
 def fsum(alist):
@@ -418,5 +458,8 @@ def fproduct(alist):
 
 
 def flatten(alist):
-  """Method for flattening a list of lists into a list containing all elements of each contained list."""
+  """
+  Method for flattening a list of lists into a list containing all elements of
+  each contained list.
+  """
   return alist.foldRight(fl(), lambda e, a: concat(e, a))
