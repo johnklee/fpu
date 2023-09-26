@@ -1,0 +1,9 @@
+[tool.pytest.ini_options]
+addopts = [
+    "--cache-clear", 
+    "--cov=fpu", 
+    "--cov-report=term-missing", 
+    "--cov-fail-under=90", 
+    "--color=auto", 
+    "-ra"
+]
