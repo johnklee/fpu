@@ -5,5 +5,6 @@ addopts = [
     "--cov-report=term-missing", 
     "--cov-fail-under=90", 
     "--color=auto", 
-    "-ra"
+    "--tb=line",
+    "-ra", 
 ]
