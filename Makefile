@@ -7,7 +7,7 @@ init:
 
 test:
 	- coverage run -m pytest tests
-	coverage report -m 
+	coverage report
 
 dist: init test
 	rm -f dist/*

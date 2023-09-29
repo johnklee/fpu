@@ -1,6 +1,7 @@
 [tool.pytest.ini_options]
 addopts = [
     "--cache-clear", 
+    "--color=auto",
     "--tb=line",
     "-ra"
 ]
@@ -10,6 +11,9 @@ branch = true
 source = ["fpu/"]
 
 [tool.coverage.report]
+show_missing = true
+# coverage threshold 
+fail_under=90
 # Regexes for lines to exclude from consideration
 exclude_also = [
     # Don't complain about missing debug-only code:
@@ -28,5 +32,3 @@ exclude_also = [
     # Don't complain about abstract methods, they aren't run:
     "@(abc\\.)?abstractmethod",
     ]
-
-ignore_errors = true
