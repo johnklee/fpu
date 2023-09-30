@@ -111,7 +111,11 @@ class List:
   def append(self, e):
     raise NotImplementedError()
 
-  def reduce(self, f, identity=None, short_stop_func=always_false_func):
+  def reduce(
+      self, f, identity=None,
+      short_stop_func=always_false_func,
+      use_fold_right: bool = False,
+      as_fl: bool = False):
     """Conducts FP reduce opeartion.
 
     Args:
@@ -121,14 +125,27 @@ class List:
           as identity/initializer.
       short_stop_func: A function to check if the reduce operation should stop.
           If the given function return True, it implies to stop right away.
+      use_fold_right: True to use foldRight instead. Default option is use foldLeft.
+      as_fl: True to wrap up final result as FPU list.
 
     Returns:
       Reduced result.
     """
     if identity is not None:
-      return self.foldLeft(identity, f, short_stop_func)
+      if use_fold_right:
+        result = self.foldRight(identity, f, short_stop_func)
+      else:
+        result = self.foldLeft(identity, f, short_stop_func)
     else:
-      return self.t.foldLeft(self.h, f, short_stop_func)
+      if use_fold_right:
+        result = self.t.foldRight(self.h, f, short_stop_func)
+      else:
+        result = self.t.foldLeft(self.h, f, short_stop_func)
+
+    if as_fl:
+      return fl(*result)
+
+    return result
 
   @abstractmethod
   def foldRight(self, identity, f):
@@ -253,7 +270,7 @@ class Nil(List):
   def append(self, a):
     return None
 
-  def foldRight(self, identity, f):
+  def foldRight(self, identity, f, short_stop_func=always_false_func):
     raise UOException('foldRight called on an empty list')
 
   def headOption(self):
@@ -352,14 +369,17 @@ class Cons(List):
   def append(self, a):
     return None
 
-  def foldRight(self, identity, f):
-    return self._foldRight(identity, self.reverse(), identity, f).eval()
+  def foldRight(self, identity, f, short_stop_func=always_false_func):
+    if short_stop_func(identity):
+      return nil
 
-  def _foldRight(self, acc, alist, identity, f):
+    return self._foldRight(identity, self.reverse(), identity, f, short_stop_func).eval()
+
+  def _foldRight(self, acc, alist, identity, f, short_stop_func):
     return (
       ret(acc)
       if alist.isEmpty()
-      else sus(Supplier(self._foldRight, f(alist.h, acc), alist.t, identity, f))
+      else sus(Supplier(self._foldRight, f(alist.h, acc), alist.t, identity, f, short_stop_func))
     )
 
   def headOption(self):
@@ -458,8 +478,5 @@ def fproduct(alist):
 
 
 def flatten(alist):
-  """
-  Method for flattening a list of lists into a list containing all elements of
-  each contained list.
-  """
+  """Flatterns a list of lists into a list containing all elements of each contained list."""
   return alist.foldRight(fl(), lambda e, a: concat(e, a))

@@ -56,6 +56,24 @@ class GFTestCase(unittest.TestCase):
     self.assertEqual(30, alist.reduce(lambda a, b: a + b))
     self.assertEqual(31, alist.reduce(lambda a, b: a + b, 1))
 
+  def test_api_reduce_by_fold_right(self):
+    alist = fl('1', '2', '3')
+
+    # First round a='2', b='3' => '32'
+    # Second round a='32', b='1' => '132'
+    self.assertEqual(
+        '132', alist.reduce(lambda a, b: f'{b}{a}', use_fold_right=True))
+    self.assertEqual(
+        '0321', alist.reduce(lambda a, b: f'{b}{a}', '0', use_fold_right=True))
+
+  def test_api_reduce_as_fl(self):
+    alist = fl('1', '2')
+
+    result = alist.reduce(lambda a, b: a + b, as_fl=True)
+
+    self.assertTrue(isinstance(result, Cons))
+    self.assertEqual(list(result), ['1', '2'])
+
   def test_api_foldLeft(self):
     """Testing API List.foldLeft."""
     alist = fl(1, 2, 3, 4, 5)
