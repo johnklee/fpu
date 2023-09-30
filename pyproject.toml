@@ -1,9 +1,36 @@
 [tool.pytest.ini_options]
 addopts = [
     "--cache-clear", 
-    "--cov=fpu", 
-    "--cov-report=term-missing", 
-    "--cov-fail-under=90", 
-    "--color=auto", 
+    "--color=auto",
+    "--tb=line",
     "-ra"
+]
+
+[tool.coverage.run]
+branch = true
+source = ["fpu/"]
+
+[tool.coverage.report]
+show_missing = true
+# coverage threshold 
+fail_under=90
+# Regexes for lines to exclude from consideration
+exclude_also = [
+    # Don't complain about missing debug-only code:
+    "if self[.]debug",
+
+    # Don't complain for trivial parts
+    "def __repr__",
+    "def __hash__",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+
+    # Don't complain if non-runnable code isn't run:
+    "if 0:",
+    "if __name__ == .__main__.:",
+
+    # Don't complain about abstract methods, they aren't run:
+    "@(abc[.])?abstractmethod",
 ]
