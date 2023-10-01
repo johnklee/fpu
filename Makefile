@@ -6,7 +6,8 @@ init:
 	pip install -r requirements.txt
 
 test:
-	pytest tests
+	- coverage run -m pytest tests
+	coverage report
 
 dist: init test
 	rm -f dist/*

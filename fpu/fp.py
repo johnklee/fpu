@@ -132,7 +132,12 @@ class Some(Option):
     return self.value
 
   def __eq__(self, other):
-    return True if isinstance(other, Some) and self.value == other.value or self.value == other else False
+    return (
+      True
+      if isinstance(other, Some) and (
+        self.value == other.value or self.value == other)
+      else False
+    )
 
   def __str__(self):
     return "Some({})".format(self.value)
@@ -464,6 +469,10 @@ class CollectionUtils:
   @staticmethod
   def range(start, end, step=1, e_inclusive=False):
     if e_inclusive:
-      return CollectionUtils.unfold(start, lambda e: e + step, lambda e: e <= end)
+      return CollectionUtils.unfold(
+        start, lambda e: e + step, lambda e: e <= end
+      )
 
-    return CollectionUtils.unfold(start, lambda e: e + step, lambda e: e < end)
+    return CollectionUtils.unfold(
+      start, lambda e: e + step, lambda e: e < end
+    )
