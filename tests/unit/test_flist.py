@@ -52,6 +52,7 @@ class GFTestCase(unittest.TestCase):
     pass
   
   def test_api_setHead(self):
+    """Testing API Cons.setHead."""
     alist = fl(1, 'x', 2)
     alist = alist.setHead('z')
     self.assertEqual(['z', 'x', 2], list(alist))
