@@ -125,7 +125,8 @@ class List:
           as identity/initializer.
       short_stop_func: A function to check if the reduce operation should stop.
           If the given function return True, it implies to stop right away.
-      use_fold_right: True to use foldRight instead. Default option is use foldLeft.
+      use_fold_right: True to use foldRight instead. Default option is use
+          foldLeft.
       as_fl: True to wrap up final result as FPU list.
 
     Returns:
@@ -148,9 +149,6 @@ class List:
     return result
 
   @abstractmethod
-  def foldRight(self, identity, f):
-    raise NotImplementedError()
-
   def foldLeft(self, identity, f, short_stop_func=always_false_func):
     """Conducts fold left operation.
 
@@ -158,22 +156,27 @@ class List:
       identity: Initializer to place as the first elemnt of fold operation.
       f: Functon as fold operation.
       short_stop_func: A function to check if the reduce operation should stop.
-          If the given function return True, it implies to stop right away.
+          If the given function return True, operation will stop right away.
 
     Returns:
       Fold left result.
     """
-    if short_stop_func(identity):
-      return nil
+    raise NotImplementedError()
 
-    return self._foldLeft(identity, self, f, short_stop_func).eval()
+  @abstractmethod
+  def foldRight(self, identity, f, short_stop_func=always_false_func):
+    """Conducts fold right operation.
 
-  def _foldLeft(self, acc, alist, f, short_stop_func=always_false_func):
-    if alist.isEmpty() or short_stop_func(alist.h):
-      return ret(acc)
+    Args:
+      identity: Initializer to place as the first elemnt of fold operation.
+      f: Functon as fold operation.
+      short_stop_func: A function to check if the reduce operation should stop.
+          If the given function return True, operation will stop right away.
 
-    return sus(Supplier(
-      self._foldLeft, f(acc, alist.h), alist.t, f, short_stop_func))
+    Returns:
+      Fold right result.
+    """
+    raise NotImplementedError()
 
   @abstractmethod
   def headOption(self):
@@ -269,6 +272,9 @@ class Nil(List):
 
   def append(self, a):
     return None
+
+  def foldLeft(self, identity, f, short_stop_func=always_false_func):
+    raise UOException('foldLeft called on an empty list')
 
   def foldRight(self, identity, f, short_stop_func=always_false_func):
     raise UOException('foldRight called on an empty list')
@@ -369,18 +375,34 @@ class Cons(List):
   def append(self, a):
     return None
 
+  def foldLeft(self, identity, f, short_stop_func=always_false_func):
+    if short_stop_func(identity):
+      return nil
+
+    return self._foldLeft(identity, self, f, short_stop_func).eval()
+
+  def _foldLeft(self, acc, alist, f, short_stop_func=always_false_func):
+    if alist.isEmpty() or short_stop_func(alist.h):
+      return ret(acc)
+
+    return sus(Supplier(
+      self._foldLeft, f(acc, alist.h), alist.t, f, short_stop_func))
+
   def foldRight(self, identity, f, short_stop_func=always_false_func):
     if short_stop_func(identity):
       return nil
 
-    return self._foldRight(identity, self.reverse(), identity, f, short_stop_func).eval()
+    return self._foldRight(
+      identity, self.reverse(), identity, f, short_stop_func).eval()
 
   def _foldRight(self, acc, alist, identity, f, short_stop_func):
     return (
       ret(acc)
       if alist.isEmpty()
-      else sus(Supplier(self._foldRight, f(alist.h, acc), alist.t, identity, f, short_stop_func))
-    )
+      else sus(
+        Supplier(
+          self._foldRight, f(alist.h, acc), alist.t, identity, f,
+          short_stop_func)))
 
   def headOption(self):
     raise UOException('headOption called on an empty list')
@@ -478,5 +500,5 @@ def fproduct(alist):
 
 
 def flatten(alist):
-  """Flatterns a list of lists into a list containing all elements of each contained list."""
+  """Flatterns a list of containers."""
   return alist.foldRight(fl(), lambda e, a: concat(e, a))
