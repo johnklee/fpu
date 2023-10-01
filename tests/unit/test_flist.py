@@ -2,6 +2,7 @@ import unittest
 import sys
 import os
 import re
+import random 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fpu')))  # noqa
 from fp import *  # noqa
 import flist
@@ -49,6 +50,11 @@ class GFTestCase(unittest.TestCase):
 
   def tearDown(self):
     pass
+  
+  def test_api_setHead(self):
+    alist = fl(1, 'x', 2)
+    alist = alist.setHead('z')
+    self.assertEqual(['z', 'x', 2], list(alist))
 
   def test_api_reduce(self):
     """Testing API List.reduce."""
@@ -68,9 +74,7 @@ class GFTestCase(unittest.TestCase):
 
   def test_api_reduce_as_fl(self):
     alist = fl('1', '2')
-
     result = alist.reduce(lambda a, b: a + b, as_fl=True)
-
     self.assertTrue(isinstance(result, Cons))
     self.assertEqual(list(result), ['1', '2'])
 
@@ -82,30 +86,61 @@ class GFTestCase(unittest.TestCase):
     self.assertEqual(120.0, alist.foldLeft(1.0, lambda a, e: a * e))
 
   def test_api_foldLeft_with_short_stop(self):
+    """Testing API Cons.foldLeft with arg short_stop_func."""
     alist = fl(1, 2, 3, 4, 5)
-
-    result = alist.foldLeft(
-        0, lambda a, b: a + b,
-        short_stop_func=lambda v: v > 3)
+    f = lambda a, b: a + b # noqa
+    # test corner case where the func stops at identity
+    result = alist.foldLeft(0, f, short_stop_func=lambda v: v > -1)
+    self.assertIsInstance(result, Nil)
 
     # The folding operation will stop at element 4.
     # So we have folding result as 0 + 1 + 2 + 3 = 6
+    result = alist.foldLeft(0, f, short_stop_func=lambda v: v > 3)
     self.assertEqual(result, 6)
+
+  def test_api_foldReft(self):
+    """Testing API Cons.foldRight."""
+    alist = fl(1, 2, 3, 4, 5)
+    self.assertEqual('123450', alist.foldRight(0, lambda a, e: "{}{}".format(a, e)))
+    self.assertEqual(15, alist.foldRight(0, lambda a, e: a + e))
+    self.assertEqual(120.0, alist.foldLeft(1.0, lambda a, e: a * e))
+
+  def test_api_foldRight_with_short_stop(self):
+    """Testing API Cons.foldRight with arg short_stop_func."""
+    alist = fl(1, 2, 3, 4, 5)
+    f = lambda a, b: a + b # noqa
+    # test corner case where the func stops at identity
+    result = alist.foldRight(0, f, short_stop_func=lambda v: v > -1)
+    self.assertIsInstance(result, Nil)
+
+    # The folding operation will stop at element 4.
+    # So we have folding result as 3 + 4 + 5 = 15
+    result = alist.foldRight(0, f, short_stop_func=lambda v: v > 3)
+    self.assertEqual(result, 15)
 
   def test_gapi_fl(self):
     """Testing global API:fl to create object of List."""
-    alist = fl(1, 2, 3)
-    self.assertEqual('[1, 2, 3, NIL]', str(alist))
-    self.assertEqual(3, alist.size())
-    self.assertEqual(3, alist.length())
-    self.assertEqual(1, alist.head())
-    self.assertEqual('[2, 3, NIL]', str(alist.tail()))
+    # case input element (int/float/str) + list + Generator
+    def firstevens(n: int):
+      num = 0
+      while num <= n:
+        yield num
+        num += 2
+    alist = fl(-1, ['a', 'b', 'c'], -10.2, firstevens(6), 'Hi')
+    self.assertEqual('[-1, c, b, a, -10.2, 6, 4, 2, 0, Hi, NIL]', str(alist))
+    self.assertEqual(10, alist.size())
+    self.assertEqual(10, alist.length())
+    self.assertEqual(-1, alist.head())
+    self.assertEqual('[c, b, a, -10.2, 6, 4, 2, 0, Hi, NIL]', str(alist.tail()))
 
   def test_gapi_comp(self):
     """Testing global API:comp to generate composition from given list."""
+    # corner case
+    fpu_comp_list = comp([], random.randint(0, 10))
+    self.assertIsInstance(fpu_comp_list, Nil)
+
     # Composition for 2 element of [1, 2, 3] will be [(1, 2), (1, 3), (2, 3)]
     fpu_comp_list = comp([1, 2, 3], 2)
-
     self.assertEqual('[(1, 2), (1, 3), (2, 3), NIL]', str(fpu_comp_list))
 
   def test_gapi_concat(self):
@@ -181,7 +216,32 @@ class GFTestCase(unittest.TestCase):
   def test_feat_for_in(self):
     """Testing iteration."""
     alist = fl(1, 2, 3)
-    i = 1
-    for e in alist:
+    for i, e in enumerate(alist, 1):
       self.assertEqual(i, e)
-      i += 1
+
+    alist_iter = iter(alist)
+    for i, e in enumerate(alist_iter, 1):
+      self.assertEqual(i, e)
+    self.assertRaises(StopIteration, alist_iter.next)
+
+  def test_gapi_nil(self):
+    """Testing global API:Nil to create object of Nil."""
+    nil = Nil()
+    self.assertRaises(UOException, nil.head)
+    self.assertRaises(UOException, nil.tail)
+    self.assertRaises(UOException, nil.setHead, random.random())
+    self.assertEqual("[NIL]", str(nil))
+    self.assertEqual(nil, nil.drop(random.randint(0, 10)))
+    self.assertEqual(nil, nil.dropWhile(lambda e: e in range(10)))
+    self.assertEqual(nil, nil.reverse())
+    self.assertRaises(UOException, nil.init)
+    self.assertRaises(UOException, nil.size)
+    self.assertEqual(nil, nil.map(lambda e: e + random.random()))
+    self.assertEqual(nil, nil.flatMap(lambda e: fl(e, e * 2)))
+    self.assertEqual(nil, nil.filter(lambda e: e % 2 == 0))
+    self.assertEqual(None, nil.append(['x', 1, '3']))
+    self.assertRaises(UOException, nil.foldRight,
+                      identity=-1, f=lambda a, e: "{}{}".format(a, e))
+    self.assertRaises(UOException, nil.headOption)
+    self.assertEqual(0, nil.sum())
+    self.assertEqual(nil, nil.zip())
