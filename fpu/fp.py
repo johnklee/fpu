@@ -440,7 +440,7 @@ class CollectionUtils:
 
   @staticmethod
   def prepend(alist, e):
-    nlist = CollectionUtils.copy(alist)
+    nlist = list(CollectionUtils.copy(alist))
     nlist.insert(0, e)
     return nlist
 

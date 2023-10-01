@@ -148,8 +148,12 @@ class CUTestCase(unittest.TestCase):
             self.assertEqual(ulist[i], alist[i] + 1)
 
         ulist = CollectionUtils.append(alist, 5)
-        self.assertEqual(len(ulist), len(alist)+1)
+        self.assertEqual(len(ulist), len(alist) + 1)
         self.assertEqual(ulist[-1], 5)
+
+        ulist = CollectionUtils.prepend(alist, 12)
+        self.assertEqual(len(ulist), len(alist) + 1)
+        self.assertEqual(ulist[0], 12)
 
     def test_first(self):
         alist = CollectionUtils.fl(self.tlist)
