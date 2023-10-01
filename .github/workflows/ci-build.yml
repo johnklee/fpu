@@ -1,0 +1,33 @@
+name: Python package
+
+on: 
+  pull_request: 
+    branches: 
+      - master
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: make init 
+
+      - name: Lint fpu with flake8 
+        run: make lint 
+      
+      - name: Test fpu with pytest 
+        run: make test 
