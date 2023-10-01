@@ -262,7 +262,6 @@ class OptionTest(unittest.TestCase):
   '''
   Test Cases of class Option
   '''
-
   def setUp(self):
     pass
 
@@ -277,7 +276,7 @@ class OptionTest(unittest.TestCase):
 
   def test_gapi_none(self):
     n = Option.none()
-    self.assertTrue(isinstance(n, N))        
+    self.assertTrue(isinstance(n, N))
 
   def test_api_isSome(self):
     s = Option.some('somedata')
