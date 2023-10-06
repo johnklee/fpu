@@ -122,12 +122,12 @@ class GFTestCase(unittest.TestCase):
   def test_gapi_fl(self):
     """Testing global API:fl to create object of List."""
     # case input element (int/float/str) + list + Generator
-    def firstevens(n: int):
+    def even_number_generator(until: int):
       num = 0
-      while num <= n:
+      while num <= until:
         yield num
         num += 2
-    alist = fl(-1, ['a', 'b', 'c'], -10.2, firstevens(6), 'Hi')
+    alist = fl(-1, ['a', 'b', 'c'], -10.2, even_number_generator(6), 'Hi')
     self.assertEqual('[-1, c, b, a, -10.2, 6, 4, 2, 0, Hi, NIL]', str(alist))
     self.assertEqual(10, alist.size())
     self.assertEqual(10, alist.length())

@@ -188,12 +188,12 @@ class CUTestCase(unittest.TestCase):
 
         toothPaste = Product('Tooth paste', 1.5, 0.5)
         toothBrush = Product('Tooth brush', 3.5, 0.3)
-        order = CollectionUtils.l(OrderLine(toothPaste, 2),
-                                  OrderLine(toothBrush, 3))
-        weight = CollectionUtils.foldRight(order, 0.26, lambda e, i: i + e.getWeight())
-        price = CollectionUtils.foldRight(order, 1.15, lambda e, i: i + e.getAmount())
-        self.assertEqual(price, 13.5 + 1.15, 'Expect 13.5 (Real={})'.format(weight))
-        self.assertEqual(weight, 1.9 + 0.26, 'Expect 1.9 (Real={})'.format(price))
+        orders = CollectionUtils.l(OrderLine(toothPaste, 2),
+                                   OrderLine(toothBrush, 3))
+        weight = CollectionUtils.foldRight(orders, 0.26, lambda e, i: i + e.getWeight())
+        price = CollectionUtils.foldRight(orders, 1.15, lambda e, i: i + e.getAmount())
+        self.assertEqual(price, 13.5 + 1.15, 'Expect 14.65 (Real={})'.format(weight))
+        self.assertEqual(weight, 1.9 + 0.26, 'Expect 2.16 (Real={})'.format(price))
 
     def test_revese(self):
         alist = CollectionUtils.l(*self.tlist)
