@@ -404,9 +404,8 @@ class CollectionUtils:
 
   @staticmethod
   def append(alist, e):
-    nlist = list(CollectionUtils.copy(alist))
-    nlist.append(e)
-    return tuple(nlist)
+    nlist = CollectionUtils.copy(alist)  # tuple instance
+    return nlist + (e, )
 
   @staticmethod
   def first(alist, fun):
@@ -440,9 +439,8 @@ class CollectionUtils:
 
   @staticmethod
   def prepend(alist, e):
-    nlist = list(CollectionUtils.copy(alist))
-    nlist.insert(0, e)
-    return nlist
+    nlist = CollectionUtils.copy(alist)  # tuple instance
+    return (e, ) + nlist
 
   @staticmethod
   def forEach(alist, fun):
