@@ -115,6 +115,12 @@ class GFTestCase(unittest.TestCase):
     list3 = concat(list1, list2)
     self.assertEqual('[1, 2, 3, 4, 5, 6, NIL]', str(list3))
 
+  def test_gapi_frange(self):
+    """Testing global API:frange to turn range into FPU list."""
+    fpu_list = frange(0, 10, 2)
+
+    self.assertEqual('[0, 2, 4, 6, 8, NIL]', str(fpu_list))
+
   def test_api_exists(self):
     """Testing List.exists."""
     alist = fl(1, 2, 3)
