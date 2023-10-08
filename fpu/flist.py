@@ -433,6 +433,20 @@ def comp(datas, r: int):
   return fl(*list(combinations(datas, r)))
 
 
+def frange(start: int, stop: int, step: int = 1) -> List:
+  """Create List with given range conditions.
+
+  Args:
+    start: Start of the range.
+    stop: Stop of range which is not inclusivie.
+    step: Step to move in the range.
+
+  Returns:
+    FPU list.
+  """
+  return fl(range(start, stop, step)[::-1])
+
+
 def fl(*args):
   """Create List with element as given input.
 
