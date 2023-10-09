@@ -99,7 +99,7 @@ class GFTestCase(unittest.TestCase):
     result = alist.foldLeft(0, f, short_stop_func=lambda v: v > 3)
     self.assertEqual(result, 6)
 
-  def test_api_foldReft(self):
+  def test_api_foldRight(self):
     """Testing API Cons.foldRight."""
     alist = fl(1, 2, 3, 4, 5)
     self.assertEqual('123450', alist.foldRight(0, lambda a, e: "{}{}".format(a, e)))
