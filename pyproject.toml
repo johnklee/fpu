@@ -22,6 +22,7 @@ exclude_also = [
     # Don't complain for trivial parts
     "def __repr__",
     "def __hash__",
+    "def __str__",
 
     # Don't complain if tests don't hit defensive assertion code:
     "raise AssertionError",
@@ -30,6 +31,7 @@ exclude_also = [
     # Don't complain if non-runnable code isn't run:
     "if 0:",
     "if __name__ == .__main__.:",
+    "pass",
 
     # Don't complain about abstract methods, they aren't run:
     "@(abc[.])?abstractmethod",

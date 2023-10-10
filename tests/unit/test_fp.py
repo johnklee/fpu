@@ -26,10 +26,12 @@ class EmailValidationFP:
         return 'Mail sent to {}'.format(mailAddr)
 
     def validate(self, mailAddr):
-        return Case.match(Case.default(Result.success(mailAddr)),
-                          Case.mcase(Supplier(lambda s: s is None, mailAddr), Result.failure('Email is None')),
-                          Case.mcase(Supplier(lambda s: len(s) == 0, mailAddr), Result.failure('Email is empty')),
-                          Case.mcase(Supplier(lambda s: not emailPtn.match(s), mailAddr), Result.failure('Email {} is invalid'.format(mailAddr))))
+        return Case.match(
+            Case.default(Result.success(mailAddr)),
+            Case.mcase(Supplier(lambda s: s is None, mailAddr), Result.failure('Email is None')),
+            Case.mcase(Supplier(lambda s: len(s) == 0, mailAddr), Result.failure('Email is empty')),
+            Case.mcase(Supplier(lambda s: not emailPtn.match(s), mailAddr), Result.failure('Email {} is invalid'.format(mailAddr)))
+        )
 
     def execute(self, mailAddr):
         return self.validate(mailAddr).bind(self.sendVerificationMail, self.logError)
@@ -105,7 +107,7 @@ class FPTestCase(unittest.TestCase):
 
 
 class CUTestCase(unittest.TestCase):
-    r'''
+    '''
     Test Cases for class CollectionUtils
     '''
     def setUp(self):
@@ -148,8 +150,12 @@ class CUTestCase(unittest.TestCase):
             self.assertEqual(ulist[i], alist[i] + 1)
 
         ulist = CollectionUtils.append(alist, 5)
-        self.assertEqual(len(ulist), len(alist)+1)
+        self.assertEqual(len(ulist), len(alist) + 1)
         self.assertEqual(ulist[-1], 5)
+
+        ulist = CollectionUtils.prepend(alist, 12)
+        self.assertEqual(len(ulist), len(alist) + 1)
+        self.assertEqual(ulist[0], 12)
 
     def test_first(self):
         alist = CollectionUtils.fl(self.tlist)
@@ -157,7 +163,7 @@ class CUTestCase(unittest.TestCase):
         self.assertTrue(len(olist) == 1, 'Expect to have 1 element (Real={})'.format(len(olist)))
         self.assertTrue(olist[0] == 2, 'Expect to have 2 (Real={})'.format(olist))
 
-    def test_fold(self):
+    def test_foldLeft(self):
         alist = CollectionUtils.l(*self.tlist)
         rst1 = CollectionUtils.foldLeft(alist, 0, lambda i, e: i + e)
         rst2 = CollectionUtils.foldLeft(alist, 0, lambda e, i: i + e)
@@ -168,10 +174,26 @@ class CUTestCase(unittest.TestCase):
         toothBrush = Product('Tooth brush', 3.5, 0.3)
         order = CollectionUtils.l(OrderLine(toothPaste, 2),
                                   OrderLine(toothBrush, 3))
-        weight = CollectionUtils.foldLeft(order, 0.0, lambda i, e: i + e.getWeight())
-        price = CollectionUtils.foldLeft(order, 0.0, lambda i, e: i + e.getAmount())
-        self.assertEqual(price, 13.5, 'Expect 13.5 (Real={})'.format(weight))
-        self.assertEqual(weight, 1.9, 'Expect 1.9 (Real={})'.format(price))
+        weight = CollectionUtils.foldLeft(order, 0.26, lambda i, e: i + e.getWeight())
+        price = CollectionUtils.foldLeft(order, 1.15, lambda i, e: i + e.getAmount())
+        self.assertEqual(price, 13.5 + 1.15, 'Expect 13.5 (Real={})'.format(weight))
+        self.assertEqual(weight, 1.9 + 0.26, 'Expect 1.9 (Real={})'.format(price))
+
+    def test_foldRight(self):
+        alist = CollectionUtils.l(*self.tlist)
+        rst1 = CollectionUtils.foldRight(alist, 0, lambda i, e: i + e)
+        rst2 = CollectionUtils.foldRight(alist, 0, lambda e, i: i + e)
+        self.assertEqual(rst1, 10)  # 0 + 1 + 2 + 3 + 4 = 10
+        self.assertEqual(rst2, 10)  # 0 + 4 + 3 + 2 + 1 = 10
+
+        toothPaste = Product('Tooth paste', 1.5, 0.5)
+        toothBrush = Product('Tooth brush', 3.5, 0.3)
+        orders = CollectionUtils.l(OrderLine(toothPaste, 2),
+                                   OrderLine(toothBrush, 3))
+        weight = CollectionUtils.foldRight(orders, 0.26, lambda e, i: i + e.getWeight())
+        price = CollectionUtils.foldRight(orders, 1.15, lambda e, i: i + e.getAmount())
+        self.assertEqual(price, 13.5 + 1.15, 'Expect 14.65 (Real={})'.format(weight))
+        self.assertEqual(weight, 1.9 + 0.26, 'Expect 2.16 (Real={})'.format(price))
 
     def test_revese(self):
         alist = CollectionUtils.l(*self.tlist)
@@ -212,11 +234,11 @@ class CUTestCase(unittest.TestCase):
             self.assertTrue(olist[i] == i)
 
 class TailCallTest(unittest.TestCase):
-    r'''
+    '''
     Test Cases of class TailCall
     '''
     def setUp(self):
-        self.tlist = [1, 2, 3, 4]
+        pass
 
     def tearDown(self):
         pass
@@ -243,12 +265,12 @@ class TailCallTest(unittest.TestCase):
 
 
 class OptionTest(unittest.TestCase):
-    r'''
+    '''
     Test Cases of class Option
     '''
+
     def setUp(self):
-        self.tlist = [1, 2, 3, 4]
-        self.df = lambda e: e
+        pass 
 
     def tearDown(self):
         pass
@@ -269,11 +291,19 @@ class OptionTest(unittest.TestCase):
         self.assertTrue(s.isSome())
         self.assertFalse(n.isSome())
 
+    def test_api_getOrThrow(self):
+        someData = 'somedata'
+        s = Option.some(someData)
+        n = Option.none()
+        self.assertEqual(someData, s.getOrThrow())
+        self.assertRaises(Exception, n.getOrThrow)
+
     def test_api_getOrElse(self):
         noData = "No data"
         someData = "Some data"
-        self.assertEqual(Option.some(someData).getOrElse(Supplier(self.df, noData)), someData)
-        self.assertEqual(Option.none().getOrElse(Supplier(self.df, noData)), noData)
+        df = lambda e: e
+        self.assertEqual(Option.some(someData).getOrElse(Supplier(df, noData)), someData)
+        self.assertEqual(Option.none().getOrElse(Supplier(df, noData)), noData)
 
     def test_api_getOr(self):
         sValue = "some value"
