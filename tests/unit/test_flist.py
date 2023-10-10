@@ -88,7 +88,7 @@ class GFTestCase(unittest.TestCase):
 
   def test_api_foldLeft_with_short_stop(self):
     """Testing API Cons.foldLeft with arg short_stop_func."""
-    # TODO: fpu/57 - pytest parameterize not supported in unittest class
+    # TODO(#57): pytest parameterize not supported in unittest class
     alist = fl(1, 2, 3, 4, 5)
 
     f = lambda a, b: a + b # noqa
@@ -107,7 +107,7 @@ class GFTestCase(unittest.TestCase):
 
   def test_api_foldRight_with_short_stop(self):
     """Testing API Cons.foldRight with arg short_stop_func."""
-    # TODO: fpu/57 - pytest parameterize not supported in unittest class
+    # TODO(#57): pytest parameterize not supported in unittest class
     alist = fl(1, 2, 3, 4, 5)
 
     f = lambda a, b: a + b # noqa
@@ -134,7 +134,7 @@ class GFTestCase(unittest.TestCase):
 
   def test_gapi_comp(self):
     """Testing global API:comp to generate composition from given list."""
-    # TODO: fpu/57 - pytest parameterize not supported in unittest class
+    # TODO(#57): pytest parameterize not supported in unittest class
     # corner case
     fpu_comp_list = comp([], random.randint(0, 10))
     self.assertIsInstance(fpu_comp_list, Nil)
