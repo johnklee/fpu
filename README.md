@@ -1,3 +1,4 @@
+[![CI-Build](https://github.com/johnklee/fpu/actions/workflows/ci-build.yml/badge.svg?branch=master)](https://github.com/johnklee/fpu/actions/workflows/ci-build.yml)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fpu)
 
 Overview and Table of Contents
