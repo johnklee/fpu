@@ -42,7 +42,7 @@ def min_max_imp(dataSet):
     max_list = []
     for d in dataSet:
         max_list.append(max(d['values']))
-        
+
     return min(max_list)
 
 min_max_imp(dataSet) # 3
@@ -74,19 +74,19 @@ The [side effects](https://en.wikipedia.org/wiki/Side_effect_(computer_science))
 ### Immutable data structures
 There are many python packages support you to carry out this requirement. One of them is [**pyrsistent**](https://github.com/tobgu/pyrsistent). Below is a few usage of it to show `immutable data`:
 ```python
-In [2]: v1 = v(1, 2, 3)                                                         
+In [2]: v1 = v(1, 2, 3)
 
 In [3]: v2 = v1.append(4) # Any operation on v1 will return new vectory to reflect the modification
 
-In [4]: v1                                                                      
+In [4]: v1
 Out[4]: pvector([1, 2, 3])  # v1 stay immutable
 
-In [5]: v2                                 
+In [5]: v2
 Out[5]: pvector([1, 2, 3, 4])  # v2 reflect the change for appending 4
 
-In [6]: v3 = v2.set(1, 5)          
+In [6]: v3 = v2.set(1, 5)
 
-In [7]: v2                                                                      
+In [7]: v2
 Out[7]: pvector([1, 2, 3, 4])
 
 In [8]: v3
@@ -102,26 +102,26 @@ A [Closure](https://en.wikipedia.org/wiki/Closure_(computer_programming)) which 
 
 Below is a simple example to create closure:
 ```python
-In [10]: def addN(n): 
-    ...:     def _add(v): 
-    ...:         return v + n 
-    ...:     return _add 
-    ...:                                                                                                                                                                                                           
+In [10]: def addN(n):
+    ...:     def _add(v):
+    ...:         return v + n
+    ...:     return _add
+    ...:
 
-In [11]: addOne = addN(1)                                                                                                                                                                                          
+In [11]: addOne = addN(1)
 
-In [12]: addOne(2)                                                                                                                                                                                                 
+In [12]: addOne(2)
 Out[12]: 3
 
-In [13]: addOne(3)                                                                                                                                                                                                 
+In [13]: addOne(3)
 Out[13]: 4
 
-In [14]: addTwo = addN(2)                                                                                                                                                                                          
+In [14]: addTwo = addN(2)
 
-In [15]: addTwo(2)                                                                                                                                                                                                 
+In [15]: addTwo(2)
 Out[15]: 4
 
-In [16]: addTwo(3)                                                                                                                                                                                                 
+In [16]: addTwo(3)
 Out[16]: 5
 ```
 [Currying](https://en.wikipedia.org/wiki/Currying) is like a kind of incremental binding of function arguments. It is the technique of breaking down the evaluation of a function that takes multiple arguments into evaluating a sequence of single-argument functions:
@@ -137,7 +137,7 @@ from inspect import signature
 def curry(x, argc=None):
     if argc is None:
         argc = len(signature(x).parameters)
-        
+
     def p(*a):
         if len(a) == argc:
             return x(*a)
@@ -152,30 +152,30 @@ def myfun(a,b,c):
     
 myfun(1, 2, 3)
 myfun(1, 2)(3)
-myfun(1)(2)(3) 
+myfun(1)(2)(3)
 ```
 
 ### Recursion instead of loops/iteration
 FP favors recursion over for-loop. However, the recursion will use precious resource as stack. You can use below sample code to retrieve the recursive limit:
 ```python
-In [17]: import sys                                                                                                                                                                                                
+In [17]: import sys
 
-In [18]: sys.getrecursionlimit()                                                                                                                                                                                   
+In [18]: sys.getrecursionlimit()
 Out[18]: 3000
 ```
 This package use class **TailCall** to store the function call in heap instead of stack. Below is one usage example:
 ```python
-In [1]: def fibRec(n, x=0, y=1): 
-   ...:     if n == 0: 
-   ...:         return x 
-   ...:     else: 
-   ...:         return fibRec(n-1, y, x + y) 
-   ...:                                                                         
+In [1]: def fibRec(n, x=0, y=1):
+   ...:     if n == 0:
+   ...:         return x
+   ...:     else:
+   ...:         return fibRec(n-1, y, x + y)
+   ...:
 
-In [2]: fibRec(3)                                                               
+In [2]: fibRec(3)
 Out[2]: 2
 
-In [3]: fibRec(3000)                                                            
+In [3]: fibRec(3000)
 ---------------------------------------------------------------------------
 RecursionError                            Traceback (most recent call last)
 <ipython-input-3-035cf1755b78> in <module>
@@ -185,7 +185,7 @@ RecursionError                            Traceback (most recent call last)
       3         return x
       4     else:
 ----> 5         return fibRec(n-1, y, x + y)
-      6 
+      6
 
 ... last 1 frames repeated, from the frame below ...
 
@@ -199,20 +199,20 @@ RecursionError: maximum recursion depth exceeded in comparison
 ```
 The exception is raised owing to recursion limitation. We can get by this limition by adopting **TailCall**:
 ```python
-In [5]: from fpu.fp import *                                                                                        
+In [5]: from fpu.fp import *
 
 In [6]: ret = TailCall.ret; sus = TailCall.sus
-In [22]: def fib(n, x=0, y=1):     
-    ...:     return ret(x) if n == 0 else sus(Supplier(fib, n-1, y, x + y)) 
-    ...:                                                                                                                                                                                                           
+In [22]: def fib(n, x=0, y=1):
+    ...:     return ret(x) if n == 0 else sus(Supplier(fib, n-1, y, x + y))
+    ...:
 
-In [23]: fib(3)                                                                                                                                                                                                    
+In [23]: fib(3)
 Out[23]: <fpu.fp.Suspend at 0x7f2be96be710>
 
-In [24]: fib(3).eval()                                                                                                                                                                                             
+In [24]: fib(3).eval()
 Out[24]: 2
 
-In [25]: fib(3000).eval()                                                                                                                                                                                          
+In [25]: fib(3000).eval()
 Out[25]: 410615886307971260333568378719267105220125108637369252408885430926905584274113403731330491660850044560830036835706942274588569362145476502674373045446852160486606292497360503469773453733196887405847255290082049086907512622059054542195889758031109222670849274793859539133318371244795543147611073276240066737934085191731810993201706776838934766764778739502174470268627820918553842225858306408301661862900358266857238210235802504351951472997919676524004784236376453347268364152648346245840573214241419937917242918602639810097866942392015404620153818671425739835074851396421139982713640679581178458198658692285968043243656709796000
 ```
 
@@ -269,7 +269,7 @@ def gemstones_imp(arr):
     return len(uset)
 
 print("Output of gemstones_imp={}".format(gemstones_imp(arr)))
-``` 
+```
 The FP (declarative approach) code will be neat and graceful:
 ```python
 from fpu.flist import *
