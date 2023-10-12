@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.com/johnklee/fpu.svg?branch=master)](https://travis-ci.com/johnklee/fpu)<br/>
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fpu)
+
 Overview and Table of Contents
 ==========================
 This package is used as utility to support more thorough FP (functional programming) functionalities in Python. For more, you can refer to [FPU.pptx](https://github.com/johnklee/fpu/blob/master/docs/FPU.pptx)
