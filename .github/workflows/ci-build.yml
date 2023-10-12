@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -31,3 +30,12 @@ jobs:
       
       - name: Test fpu with pytest 
         run: make test 
+
+      - name: Report Coveralls 
+        if: ${{ matrix.python-version }} == "3.8"
+        run: |
+          coverage xml -o ".coverage.xml"
+          curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz \
+          && ./coveralls -f ".coverage.xml"
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
