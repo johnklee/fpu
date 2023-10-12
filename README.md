@@ -1,5 +1,6 @@
 [![CI-Build](https://github.com/johnklee/fpu/actions/workflows/ci-build.yml/badge.svg?branch=master)](https://github.com/johnklee/fpu/actions/workflows/ci-build.yml)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fpu)
+[![Coverage Status](https://coveralls.io/repos/github/wkCircle/fpu/badge.svg?branch=19-badges)](https://coveralls.io/github/wkCircle/fpu?branch=19-badges)
 
 Overview and Table of Contents
 ==========================
