@@ -35,7 +35,7 @@ jobs:
         run: make test 
 
       - name: Report Coveralls 
-        if: ${{ matrix.python-version }} == "3.8"
+        if: ${{ matrix.python-version == 3.8}}
         run: |
           coverage xml -o ".coverage.xml"
           curl -sL https://coveralls.io/coveralls-linux.tar.gz | tar -xz \
