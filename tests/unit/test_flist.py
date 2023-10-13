@@ -1,9 +1,5 @@
 import unittest
-import sys
-import os
-import re
 import random
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))  # noqa
 from fpu.fp import *  # noqa
 from fpu import flist
 from fpu.flist import *  # noqa
@@ -40,8 +36,8 @@ class ListTest(unittest.TestCase):
 
     self.assertTrue(isinstance(fpu_zip_list, flist.List))
     self.assertEqual(
-        list(fpu_zip_list),
-        [('a', '1', 'd'), ('b', '2', 'e'), ('c', '3', 'f')])
+      list(fpu_zip_list),
+      [('a', '1', 'd'), ('b', '2', 'e'), ('c', '3', 'f')])
 
 
 class GFTestCase(unittest.TestCase):
@@ -51,12 +47,6 @@ class GFTestCase(unittest.TestCase):
 
   def tearDown(self):
     pass
-
-  def test_api_setHead(self):
-    """Testing API Cons.setHead."""
-    alist = fl(1, 'x', 2)
-    alist = alist.setHead('z')
-    self.assertEqual(['z', 'x', 2], list(alist))
 
   def test_api_setHead(self):
     """Testing API Cons.setHead."""
@@ -76,9 +66,9 @@ class GFTestCase(unittest.TestCase):
     # First round a='2', b='3' => '32'
     # Second round a='32', b='1' => '132'
     self.assertEqual(
-        '132', alist.reduce(lambda a, b: f'{b}{a}', use_fold_right=True))
+      '132', alist.reduce(lambda a, b: f'{b}{a}', use_fold_right=True))
     self.assertEqual(
-        '0321', alist.reduce(lambda a, b: f'{b}{a}', '0', use_fold_right=True))
+      '0321', alist.reduce(lambda a, b: f'{b}{a}', '0', use_fold_right=True))
 
   def test_api_reduce_as_fl(self):
     alist = fl('1', '2')
@@ -89,7 +79,8 @@ class GFTestCase(unittest.TestCase):
   def test_api_foldLeft(self):
     """Testing API List.foldLeft."""
     alist = fl(1, 2, 3, 4, 5)
-    self.assertEqual('012345', alist.foldLeft(0, lambda a, e: "{}{}".format(a, e)))
+    self.assertEqual(
+      '012345', alist.foldLeft(0, lambda a, e: "{}{}".format(a, e)))
     self.assertEqual(15, alist.foldLeft(0, lambda a, e: a + e))
     self.assertEqual(120.0, alist.foldLeft(1.0, lambda a, e: a * e))
 
@@ -108,7 +99,8 @@ class GFTestCase(unittest.TestCase):
   def test_api_foldRight(self):
     """Testing API Cons.foldRight."""
     alist = fl(1, 2, 3, 4, 5)
-    self.assertEqual('123450', alist.foldRight(0, lambda a, e: "{}{}".format(a, e)))
+    self.assertEqual(
+      '123450', alist.foldRight(0, lambda a, e: "{}{}".format(a, e)))
     self.assertEqual(15, alist.foldRight(0, lambda a, e: a + e))
     self.assertEqual(120.0, alist.foldRight(1.0, lambda a, e: a * e))
 
@@ -164,25 +156,25 @@ class GFTestCase(unittest.TestCase):
     self.assertEqual('[0, 2, 4, 6, 8, NIL]', str(fpu_list))
 
   @parameterized.named_parameters(
-      dict(
-          testcase_name='case 1',
-          test_func=lambda e: e == 1,
-          expected_result=True),
-      dict(
-          testcase_name='case 2',
-          test_func=lambda e: e == 5,
-          expected_result=False),
-      dict(
-          testcase_name='case 3',
-          test_func=lambda e: e > 1,
-          expected_result=True),
+    dict(
+      testcase_name='case 1',
+      test_func=lambda e: e == 1,
+      expected_result=True),
+    dict(
+      testcase_name='case 2',
+      test_func=lambda e: e == 5,
+      expected_result=False),
+    dict(
+      testcase_name='case 3',
+      test_func=lambda e: e > 1,
+      expected_result=True),
   )
   def test_api_exists(self, testcase_name, test_func, expected_result):
     """Tests the method `exists` on FPU list."""
     alist = fl(1, 2, 3)
 
     self.assertEqual(
-        alist.exists(test_func), expected_result)
+      alist.exists(test_func), expected_result)
 
   def test_api_drop(self):
     """Testing List.drop."""
