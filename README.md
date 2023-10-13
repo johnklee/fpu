@@ -1,4 +1,7 @@
-[![Build Status](https://travis-ci.com/johnklee/fpu.svg?branch=master)](https://travis-ci.com/johnklee/fpu)<br/>
+[![CI-Build](https://github.com/johnklee/fpu/actions/workflows/ci-build.yml/badge.svg?branch=master)](https://github.com/johnklee/fpu/actions/workflows/ci-build.yml)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/fpu)
+[![Coverage Status](https://coveralls.io/repos/github/wkCircle/fpu/badge.svg?branch=19-badges)](https://coveralls.io/github/wkCircle/fpu?branch=19-badges)
+
 Overview and Table of Contents
 ==========================
 This package is used as utility to support more thorough FP (functional programming) functionalities in Python. For more, you can refer to [FPU.pptx](https://github.com/johnklee/fpu/blob/master/docs/FPU.pptx)
