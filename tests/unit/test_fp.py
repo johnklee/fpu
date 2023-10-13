@@ -1,11 +1,6 @@
 import unittest
-import sys
-import os
 import re
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fpu')))  # noqa
-# from pprint import pprint
-# pprint(sys.path)
-from fp import *  # noqa
+from fpu.fp import *  # noqa
 
 
 #####################
@@ -54,7 +49,6 @@ class OrderLine:
 
   def getAmount(self):
     return self.product.price * self.count
-
 
 
 #####################
@@ -215,9 +209,7 @@ class CUTestCase(unittest.TestCase):
 
   def test_unfold(self):
     seed = 0
-    f = lambda e: e + 1
-    p = lambda e: e < 10
-    olist = CollectionUtils.unfold(seed, f, p)
+    olist = CollectionUtils.unfold(seed, lambda e: e + 1, lambda e: e < 10)
     self.assertTrue(len(olist) == 10)
     for i in range(len(olist)):
       self.assertTrue(olist[i] == i)

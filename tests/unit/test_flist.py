@@ -1,12 +1,8 @@
 import unittest
-import sys
-import os
-import re
-import random 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fpu')))  # noqa
-from fp import *  # noqa
-import flist
-from flist import *  # noqa
+import random
+from fpu.fp import *  # noqa
+from fpu import flist
+from fpu.flist import *  # noqa
 
 
 #####################
@@ -39,8 +35,8 @@ class ListTest(unittest.TestCase):
 
     self.assertTrue(isinstance(fpu_zip_list, flist.List))
     self.assertEqual(
-        list(fpu_zip_list),
-        [('a', '1', 'd'), ('b', '2', 'e'), ('c', '3', 'f')])
+      list(fpu_zip_list),
+      [('a', '1', 'd'), ('b', '2', 'e'), ('c', '3', 'f')])
 
 
 class GFTestCase(unittest.TestCase):
@@ -50,7 +46,7 @@ class GFTestCase(unittest.TestCase):
 
   def tearDown(self):
     pass
-  
+
   def test_api_setHead(self):
     """Testing API Cons.setHead."""
     alist = fl(1, 'x', 2)
@@ -69,9 +65,9 @@ class GFTestCase(unittest.TestCase):
     # First round a='2', b='3' => '32'
     # Second round a='32', b='1' => '132'
     self.assertEqual(
-        '132', alist.reduce(lambda a, b: f'{b}{a}', use_fold_right=True))
+      '132', alist.reduce(lambda a, b: f'{b}{a}', use_fold_right=True))
     self.assertEqual(
-        '0321', alist.reduce(lambda a, b: f'{b}{a}', '0', use_fold_right=True))
+      '0321', alist.reduce(lambda a, b: f'{b}{a}', '0', use_fold_right=True))
 
   def test_api_reduce_as_fl(self):
     alist = fl('1', '2')
