@@ -2,11 +2,12 @@ import unittest
 import sys
 import os
 import re
-import random 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../fpu')))  # noqa
-from fp import *  # noqa
-import flist
-from flist import *  # noqa
+import random
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))  # noqa
+from fpu.fp import *  # noqa
+from fpu import flist
+from fpu.flist import *  # noqa
+from tests.unit import parameterized
 
 
 #####################
@@ -50,7 +51,7 @@ class GFTestCase(unittest.TestCase):
 
   def tearDown(self):
     pass
-  
+
   def test_api_setHead(self):
     """Testing API Cons.setHead."""
     alist = fl(1, 'x', 2)
@@ -156,11 +157,26 @@ class GFTestCase(unittest.TestCase):
 
     self.assertEqual('[0, 2, 4, 6, 8, NIL]', str(fpu_list))
 
-  def test_api_exists(self):
-    """Testing List.exists."""
+  @parameterized.named_parameters(
+      dict(
+          testcase_name='case 1',
+          test_func=lambda e: e == 1,
+          expected_result=True),
+      dict(
+          testcase_name='case 2',
+          test_func=lambda e: e == 5,
+          expected_result=False),
+      dict(
+          testcase_name='case 3',
+          test_func=lambda e: e > 1,
+          expected_result=True),
+  )
+  def test_api_exists(self, testcase_name, test_func, expected_result):
+    """Tests the method `exists` on FPU list."""
     alist = fl(1, 2, 3)
-    self.assertTrue(alist.exists(lambda e: e == 1))
-    self.assertFalse(alist.exists(lambda e: e == 5))
+
+    self.assertEqual(
+        alist.exists(test_func), expected_result)
 
   def test_api_drop(self):
     """Testing List.drop."""
