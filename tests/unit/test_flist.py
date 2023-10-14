@@ -47,11 +47,6 @@ class GFTestCase(unittest.TestCase):
 
   def tearDown(self):
     pass
-  
-  def test_api_setHead(self):
-    alist = fl(1, 'x', 2)
-    alist = alist.setHead('z')
-    self.assertEqual(['z', 'x', 2], list(alist))
 
   def test_api_setHead(self):
     """Testing API Cons.setHead."""
