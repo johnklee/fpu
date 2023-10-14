@@ -2,11 +2,7 @@
 import functools
 import logging
 from abc import ABCMeta, abstractmethod
-try:
-  from utils import *     # noqa
-except:                     # noqa
-  from .utils import *    # noqa
-
+from fpu.utils import *  # noqa
 
 ################################
 # API Segment

@@ -1,15 +1,10 @@
 """Module to hold list data structure used in FP world."""
 from abc import ABCMeta, abstractmethod
-try:
-  from fp import *    # noqa
-  import errors
-except:               # noqa
-  from .fp import *   # noqa
-  from fpu import errors
-
 from itertools import combinations
 from typing import Optional
 from types import GeneratorType
+from fpu.fp import *  # noqa
+from fpu import errors
 
 ret = TailCall.ret      # noqa
 sus = TailCall.sus      # noqa
