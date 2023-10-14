@@ -51,7 +51,7 @@ class GFTestCase(unittest.TestCase):
 
   def tearDown(self):
     pass
-  
+
   def test_api_setHead(self):
     """Testing API Cons.setHead."""
     alist = fl(1, 'x', 2)
