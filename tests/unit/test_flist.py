@@ -3,6 +3,7 @@ import random
 from fpu.fp import *  # noqa
 from fpu import flist
 from fpu.flist import *  # noqa
+from tests.unit import parameterized
 
 
 #####################
@@ -78,7 +79,8 @@ class GFTestCase(unittest.TestCase):
   def test_api_foldLeft(self):
     """Testing API List.foldLeft."""
     alist = fl(1, 2, 3, 4, 5)
-    self.assertEqual('012345', alist.foldLeft(0, lambda a, e: "{}{}".format(a, e)))
+    self.assertEqual(
+      '012345', alist.foldLeft(0, lambda a, e: "{}{}".format(a, e)))
     self.assertEqual(15, alist.foldLeft(0, lambda a, e: a + e))
     self.assertEqual(120.0, alist.foldLeft(1.0, lambda a, e: a * e))
 
@@ -97,7 +99,8 @@ class GFTestCase(unittest.TestCase):
   def test_api_foldRight(self):
     """Testing API Cons.foldRight."""
     alist = fl(1, 2, 3, 4, 5)
-    self.assertEqual('123450', alist.foldRight(0, lambda a, e: "{}{}".format(a, e)))
+    self.assertEqual(
+      '123450', alist.foldRight(0, lambda a, e: "{}{}".format(a, e)))
     self.assertEqual(15, alist.foldRight(0, lambda a, e: a + e))
     self.assertEqual(120.0, alist.foldRight(1.0, lambda a, e: a * e))
 
@@ -152,11 +155,26 @@ class GFTestCase(unittest.TestCase):
 
     self.assertEqual('[0, 2, 4, 6, 8, NIL]', str(fpu_list))
 
-  def test_api_exists(self):
-    """Testing List.exists."""
+  @parameterized.named_parameters(
+    dict(
+      testcase_name='case 1',
+      test_func=lambda e: e == 1,
+      expected_result=True),
+    dict(
+      testcase_name='case 2',
+      test_func=lambda e: e == 5,
+      expected_result=False),
+    dict(
+      testcase_name='case 3',
+      test_func=lambda e: e > 1,
+      expected_result=True),
+  )
+  def test_api_exists(self, testcase_name, test_func, expected_result):
+    """Tests the method `exists` on FPU list."""
     alist = fl(1, 2, 3)
-    self.assertTrue(alist.exists(lambda e: e == 1))
-    self.assertFalse(alist.exists(lambda e: e == 5))
+
+    self.assertEqual(
+      alist.exists(test_func), expected_result)
 
   def test_api_drop(self):
     """Testing List.drop."""
