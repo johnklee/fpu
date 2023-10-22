@@ -67,15 +67,26 @@ class GFTestCase(unittest.TestCase):
     self.assertEqual(30, alist.reduce(lambda a, b: a + b))
     self.assertEqual(31, alist.reduce(lambda a, b: a + b, 1))
 
-  def test_api_reduce_by_fold_right(self):
+  @parameterized.named_parameters(
+    dict(
+      testcase_name="case 1",
+      identity=None,
+      use_fold_right=True,
+      expected_result="132"),
+    dict(
+      testcase_name="case 2",
+      identity='0',
+      use_fold_right=True,
+      expected_result="0321"),
+  )
+  def test_api_reduce_by_fold_right(
+    self, testcase_name, identity, use_fold_right, expected_result
+  ):
+    # case 1: step 1. a='2', b='3' => '32' step 2. a='32', b='1' => '132'
     alist = fl('1', '2', '3')
-
-    # First round a='2', b='3' => '32'
-    # Second round a='32', b='1' => '132'
-    self.assertEqual(
-      '132', alist.reduce(lambda a, b: f'{b}{a}', use_fold_right=True))
-    self.assertEqual(
-      '0321', alist.reduce(lambda a, b: f'{b}{a}', '0', use_fold_right=True))
+    result = alist.reduce(
+      lambda a, b: f'{b}{a}', identity, use_fold_right=use_fold_right)
+    self.assertEqual(expected_result, result)
 
   def test_api_reduce_as_fl(self):
     alist = fl('1', '2')
@@ -91,17 +102,26 @@ class GFTestCase(unittest.TestCase):
     self.assertEqual(15, alist.foldLeft(0, lambda a, e: a + e))
     self.assertEqual(120.0, alist.foldLeft(1.0, lambda a, e: a * e))
 
-  def test_api_foldLeft_with_short_stop(self):
+  @parameterized.named_parameters(
+    dict(
+      testcase_name='fast case',
+      short_stop_func=lambda e: e > 3,
+      expected_result=6),
+    dict(
+      testcase_name='corner case',
+      short_stop_func=lambda e: e > -1,
+      expected_result=Nil())
+  )
+  def test_api_foldLeft_with_short_stop(
+    self, testcase_name, short_stop_func, expected_result
+  ):
     """Testing API Cons.foldLeft with arg short_stop_func."""
-    # TODO(#57): pytest parameterize not supported in unittest class
     alist = fl(1, 2, 3, 4, 5)
-
-    f = lambda a, b: a + b # noqa
-    result = alist.foldLeft(0, f, short_stop_func=lambda v: v > -1)
-    self.assertIsInstance(result, Nil)
-
-    result = alist.foldLeft(0, f, short_stop_func=lambda v: v > 3)
-    self.assertEqual(result, 6)
+    result = alist.foldLeft(0, lambda a, b: a + b, short_stop_func)
+    if isinstance(expected_result, Nil):
+      self.assertIsInstance(result, Nil)
+    else:
+      self.assertEqual(expected_result, result)
 
   def test_api_foldRight(self):
     """Testing API Cons.foldRight."""
@@ -111,17 +131,26 @@ class GFTestCase(unittest.TestCase):
     self.assertEqual(15, alist.foldRight(0, lambda a, e: a + e))
     self.assertEqual(120.0, alist.foldRight(1.0, lambda a, e: a * e))
 
-  def test_api_foldRight_with_short_stop(self):
+  @parameterized.named_parameters(
+    dict(
+      testcase_name='fast case',
+      short_stop_func=lambda e: e > 3,
+      expected_result=15),
+    dict(
+      testcase_name='corner case',
+      short_stop_func=lambda e: e > -1,
+      expected_result=Nil())
+  )
+  def test_api_foldRight_with_short_stop(
+    self, testcase_name, short_stop_func, expected_result
+  ):
     """Testing API Cons.foldRight with arg short_stop_func."""
-    # TODO(#57): pytest parameterize not supported in unittest class
     alist = fl(1, 2, 3, 4, 5)
-
-    f = lambda a, b: a + b # noqa
-    result = alist.foldRight(0, f, short_stop_func=lambda v: v > -1)
-    self.assertIsInstance(result, Nil)
-
-    result = alist.foldRight(0, f, short_stop_func=lambda v: v > 3)
-    self.assertEqual(result, 15)
+    result = alist.foldRight(0, lambda a, b: a + b, short_stop_func)
+    if isinstance(expected_result, Nil):
+      self.assertIsInstance(result, Nil)
+    else:
+      self.assertEqual(expected_result, result)
 
   def test_gapi_fl(self):
     """Testing global API:fl to create object of List."""
@@ -156,16 +185,23 @@ class GFTestCase(unittest.TestCase):
 
     self.assertEqual(list(fpu_list), expected_result)
 
-  def test_gapi_comp(self):
+  @parameterized.named_parameters(
+    dict(
+      testcase_name='fast case',
+      comp_list=comp([1, 2, 3], 2),
+      expected_result='[(1, 2), (1, 3), (2, 3), NIL]'),
+    dict(
+      testcase_name='corner case',
+      comp_list=comp([], random.randint(0, 10)),
+      expected_result=Nil())
+  )
+  def test_gapi_comp(self, testcase_name, comp_list, expected_result):
     """Testing global API:comp to generate composition from given list."""
-    # TODO(#57): pytest parameterize not supported in unittest class
-    # corner case
-    fpu_comp_list = comp([], random.randint(0, 10))
-    self.assertIsInstance(fpu_comp_list, Nil)
-
-    # Composition for 2 element of [1, 2, 3] will be [(1, 2), (1, 3), (2, 3)]
-    fpu_comp_list = comp([1, 2, 3], 2)
-    self.assertEqual('[(1, 2), (1, 3), (2, 3), NIL]', str(fpu_comp_list))
+    # fast case: 2-ele-composition of [1, 2, 3] will be [(1, 2), (1, 3), (2, 3)]
+    if isinstance(expected_result, Nil):
+      self.assertIsInstance(comp_list, Nil)
+    else:
+      self.assertEqual(expected_result, str(comp_list))
 
   def test_gapi_concat(self):
     """Testing global API:concat to concat two list."""
