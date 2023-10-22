@@ -48,6 +48,13 @@ class GFTestCase(unittest.TestCase):
   def tearDown(self):
     pass
 
+  def test_api_cumsum(self):
+    test_nums = [1, 2, 3]
+
+    cumsum_result = fl(test_nums).cumsum()
+
+    self.assertEqual(str(cumsum_result), '[3, 5, 6, NIL]')
+
   def test_api_setHead(self):
     """Testing API Cons.setHead."""
     alist = fl(1, 'x', 2)
@@ -131,6 +138,24 @@ class GFTestCase(unittest.TestCase):
     self.assertEqual(-1, alist.head())
     self.assertEqual('[c, b, a, -10.2, 6, 4, 2, 0, Hi, NIL]', str(alist.tail()))
 
+  @parameterized.named_parameters(
+    dict(
+      testcase_name='no reverse',
+      do_reverse=False,
+      expected_result=[3, 2, 1]),
+    dict(
+      testcase_name='do reverse',
+      do_reverse=True,
+      expected_result=[1, 2, 3]),
+  )
+  def test_gapi_fl_do_reverse(
+      self, testcase_name, do_reverse, expected_result):
+    test_nums = [1, 2, 3]
+
+    fpu_list = fl(test_nums, do_reverse=do_reverse)
+
+    self.assertEqual(list(fpu_list), expected_result)
+
   def test_gapi_comp(self):
     """Testing global API:comp to generate composition from given list."""
     # TODO(#57): pytest parameterize not supported in unittest class
@@ -205,6 +230,54 @@ class GFTestCase(unittest.TestCase):
     alist = fl(1, 2, 3)
     nlist = alist.map(lambda e: e * 2)
     self.assertEqual('[2, 4, 6, NIL]', str(nlist))
+
+  @parameterized.named_parameters(
+    dict(
+      testcase_name='no initializer',
+      test_func=lambda a, b: a + b,
+      initializer=None,
+      expected_result=[1, 3, 6]),
+    dict(
+      testcase_name='has initializer',
+      test_func=lambda a, b: a + b,
+      initializer=10,
+      expected_result=[11, 13, 16]),
+  )
+  def test_api_mapReduce(
+      self, testcase_name, test_func, initializer, expected_result):
+    """Testing List.mapReduce."""
+    test_nums = [1, 2, 3]
+
+    result = list(
+        fl(test_nums, do_reverse=True).mapReduce(test_func, initializer))
+
+    self.assertEqual(result, expected_result)
+
+  @parameterized.named_parameters(
+    dict(
+        testcase_name='FAT',
+        test_func=lambda a, b: a + b,
+        test_args=[2, 3, 4],
+        expected_result=[3, 5, 7]),
+    dict(
+        testcase_name='shorter_test_args',
+        test_func=lambda a, b: a + b,
+        test_args=[2, 3],
+        expected_result=[3, 5]),
+    dict(
+        testcase_name='longer_test_args',
+        test_func=lambda a, b: a + b,
+        test_args=[2, 3, 4, 5],
+        expected_result=[3, 5, 7]),
+  )
+  def test_api_mapWithArgs(
+      self, testcase_name, test_func, test_args, expected_result):
+    test_nums = [1, 2, 3]
+
+    result = list(
+        fl(test_nums, do_reverse=True).mapWithArgs(test_func, test_args))
+
+    self.assertEqual(result, expected_result)
 
   def test_api_flatMap(self):
     """Testing List.flatMap."""

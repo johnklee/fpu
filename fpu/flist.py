@@ -21,6 +21,11 @@ class List:
   __metaclass__ = ABCMeta
 
   @abstractmethod
+  def cumsum(self):
+    """Return the cumulative sum of the elements."""
+    raise NotImplementedError()
+
+  @abstractmethod
   def head(self):
     raise NotImplementedError()
 
@@ -82,9 +87,39 @@ class List:
       f: Function to map element into desired name space.
 
     Returns:
-      List object
+      FPU List object
     """
     raise NotImplementedError()
+
+  @abstractmethod
+  def mapReduce(self, f, initializer=None):
+    """Modify each element of a list by applying a function to it.
+
+    Args:
+      f: Function to map element into desired name space.
+          This function will requre two input arguments. The first one is either
+          initializer or the computed result from previous round, the second one
+          is the current element.
+      initializer: The first input argument for the first round if given.
+
+    Returns:
+      FPU List object.
+    """
+    raise NotImplementedError()
+
+  @abstractmethod
+  def mapWithArgs(self, f, args):
+    """Modify each element of a list by applying a function to it.
+
+    Args:
+      f: Function to map element into desired name space.
+          This function will requre two input arguments. The first one is the
+          original element; the second will come from the given `args`.
+      args: The second argument list to feed in the map function.
+
+    Returns:
+      FPU List object.
+    """
 
   @abstractmethod
   def flatMap(self, f):
@@ -223,6 +258,9 @@ class Nil(List):
   def __init__(self):
     pass
 
+  def cumsum(self):
+    raise UOException('cumsum called on an empty list')
+
   def head(self):
     raise UOException('head called on an empty list')
 
@@ -257,6 +295,12 @@ class Nil(List):
     return 0
 
   def map(self, f):
+    return self
+
+  def mapReduce(self, f, initializer=None):
+    return self
+
+  def mapWithArgs(self, f, args):
     return self
 
   def flatMap(self, f):
@@ -296,6 +340,9 @@ class Cons(List):
       self.l = self.t.length() + 1  # noqa
     else:
       self.l = 1  # noqa
+
+  def cumsum(self):
+    return self.mapReduce(f=lambda a, b: a + b)
 
   def head(self):
     return self.h
@@ -360,6 +407,50 @@ class Cons(List):
 
   def map(self, f):
     return self.foldRight(nil, lambda h, t: Cons(f(h), t))
+
+  def mapReduce(self, f, initializer=None):
+    if initializer in [nil, None]:
+      head = next_cons = Cons(self.h, nil)
+      return self._mapReduce(
+        self.h, self.t, head, f, next_cons).eval()
+
+    return self._mapReduce(
+      initializer, self, nil, f, nil).eval()
+
+  def _mapReduce(self, acc, alist, head, f, next_cons):
+    if alist.isEmpty():
+      return ret(head) if head is not nil else ret(Cons(acc, nil))
+
+    acc = alist.h if acc in [nil, None] else f(acc, alist.h)
+    if head in [nil, None]:
+      head = next_cons = Cons(acc, nil)
+    else:
+      next_cons.t = Cons(acc, nil)
+      next_cons = next_cons.t
+
+    return sus(
+      Supplier(
+        self._mapReduce,
+        acc, alist.t, head, f, next_cons))
+
+  def mapWithArgs(self, f, args):
+    return self._mapWithArgs(0, args, self, nil, f, nil).eval()
+
+  def _mapWithArgs(self, arg_index, args, alist, head, f, next_cons):
+    if alist.isEmpty() or arg_index >= len(args):
+      return ret(head)
+
+    v = f(alist.h, args[arg_index])
+    if head in [nil, None]:
+      head = next_cons = Cons(v, nil)
+    else:
+      next_cons.t = Cons(v, nil)
+      next_cons = next_cons.t
+
+    return sus(
+      Supplier(
+        self._mapWithArgs,
+        arg_index + 1, args, alist.t, head, f, next_cons))
 
   def flatMap(self, f):
     return self.foldRight(fl(), lambda e, a: concat(f(e), a))
@@ -442,11 +533,12 @@ def frange(start: int, stop: int, step: int = 1) -> List:
   return fl(range(start, stop, step)[::-1])
 
 
-def fl(*args):
+def fl(*args, do_reverse: bool = False):
   """Create List with element as given input.
 
   Args:
     flat(bool): True to flatten the element as list (First level only).
+    do_reverse: Reverse the created FPU list.
 
   Returns:
     `Cons` iff input `args` is not empty.
@@ -474,6 +566,9 @@ def fl(*args):
         sn = Cons(element, sn)
     else:
       sn = Cons(data, sn)
+
+  if do_reverse and sn != nil:
+    return sn.reverse()
 
   return sn
 
