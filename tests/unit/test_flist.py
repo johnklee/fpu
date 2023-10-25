@@ -195,6 +195,24 @@ class GFTestCase(unittest.TestCase):
 
   @parameterized.named_parameters(
     dict(
+      testcase_name='no reverse',
+      do_reverse=False,
+      expected_result=[3, 2, 1]),
+    dict(
+      testcase_name='do reverse',
+      do_reverse=True,
+      expected_result=[1, 2, 3]),
+  )
+  def test_gapi_fl_do_reverse(
+      self, testcase_name, do_reverse, expected_result):
+    test_nums = [1, 2, 3]
+
+    fpu_list = fl(test_nums, do_reverse=do_reverse)
+
+    self.assertEqual(list(fpu_list), expected_result)
+
+  @parameterized.named_parameters(
+    dict(
       testcase_name='fast case',
       comp_list=comp([1, 2, 3], 2),
       expected_result='[(1, 2), (1, 3), (2, 3), NIL]'),
