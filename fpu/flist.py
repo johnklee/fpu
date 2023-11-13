@@ -564,6 +564,9 @@ def fl(*args, do_reverse: bool = False):
     elif isinstance(data, range):
       for element in data:
         sn = Cons(element, sn)
+    elif isinstance(data, enumerate):
+      for element in data:
+        sn = Cons(element, sn)
     else:
       sn = Cons(data, sn)
 
