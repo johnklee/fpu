@@ -167,6 +167,32 @@ class GFTestCase(unittest.TestCase):
     self.assertEqual(-1, alist.head())
     self.assertEqual('[c, b, a, -10.2, 6, 4, 2, 0, Hi, NIL]', str(alist.tail()))
 
+  def test_gapi_fl_with_enumerate(self):
+    """Testing global API:fl with input as enumerate."""
+    test_enumerate = enumerate(['a', 'b'])
+
+    fpu_list = fl(test_enumerate)
+
+    self.assertEqual(list(fpu_list), [(1, 'b'), (0, 'a')])
+
+  @parameterized.named_parameters(
+    dict(
+      testcase_name='no reverse',
+      do_reverse=False,
+      expected_result=[3, 2, 1]),
+    dict(
+      testcase_name='do reverse',
+      do_reverse=True,
+      expected_result=[1, 2, 3]),
+  )
+  def test_gapi_fl_do_reverse(
+      self, testcase_name, do_reverse, expected_result):
+    test_nums = [1, 2, 3]
+
+    fpu_list = fl(test_nums, do_reverse=do_reverse)
+
+    self.assertEqual(list(fpu_list), expected_result)
+
   @parameterized.named_parameters(
     dict(
       testcase_name='no reverse',
